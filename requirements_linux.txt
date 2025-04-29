@@ -1,0 +1,7 @@
+cmake
+conan
+qibuild
+numpy
+build
+patchelf
+auditwheel
