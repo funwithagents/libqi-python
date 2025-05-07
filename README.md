@@ -6,7 +6,7 @@ These LibQi python bindings correspond to the  `qi` Python module.
 
 ## Up-to-date repository for compatibility with recent Python versions and OS
 
-- This repository is a fork of the official libqi-python repository (that seems to be not maintained by Aldebaran anymore).
+- This repository is a fork of the official [libqi-python](https://github.com/aldebaran/libqi-python) repository (that seems to be not maintained by Aldebaran anymore).
 - I created it mainly to update the code of the package to be able to build it with recent versions of Python (3.10+) on MacOS and Linux
 
 ## Pre-built packages
@@ -51,8 +51,8 @@ These LibQi python bindings correspond to the  `qi` Python module.
         ```
         
 - execute the build script with all the needed steps
-    - `chmod +x build_wheel_macos.sh`
-    - `./build_wheel_macos.sh`
+    - `chmod +x execute_build_wheel_macos.sh`
+    - `./execute_build_wheel_macos.sh`
 
 🥳 **Congratulations**
 It should have generated the python wheel : 
@@ -95,8 +95,8 @@ It should have generated the python wheel :
         ```
         
 - execute the build script with all the needed steps
-    - `chmod +x build_wheel_linux.sh`
-    - `./build_wheel_linux.sh`
+    - `chmod +x execute_build_wheel_linux.sh`
+    - `./execute_build_wheel_linux.sh`
 
 🥳 **Congratulations**
 It should have generated the python wheel : 
