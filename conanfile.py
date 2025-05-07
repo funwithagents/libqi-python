@@ -1,5 +1,7 @@
 from conan import ConanFile, tools
-from conan.tools.cmake import cmake_layout
+from conan.tools.cmake import CMakeToolchain, cmake_layout
+from conan.tools.files import copy
+import os
 
 BOOST_COMPONENTS = [
     "atomic",
@@ -64,7 +66,7 @@ class QiPythonConan(ConanFile):
         "gtest/[~1.14]",
     ]
 
-    generators = "CMakeToolchain", "CMakeDeps"
+    generators = "CMakeDeps"
 
     # Binary configuration
     settings = "os", "compiler", "build_type", "arch"
@@ -97,3 +99,15 @@ class QiPythonConan(ConanFile):
         # The cmake_layout() sets the folders and cpp attributes to follow the
         # structure of a typical CMake project.
         cmake_layout(self)
+
+    def generate(self):
+        tc = CMakeToolchain(self)
+        tc.variables["CMAKE_SKIP_RPATH"] = True
+        tc.generate()
+
+        for dep in self.dependencies.values():
+            if not dep.package_folder:
+                continue  # skip if the dependency doesn't have a resolved package
+            copy(self, "*.dll", src=dep.package_folder, dst=self.build_folder)
+            copy(self, "*.dylib*", src=dep.package_folder, dst=self.build_folder)
+            copy(self, "*.so*", src=dep.package_folder, dst=self.build_folder)

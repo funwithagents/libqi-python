@@ -7,7 +7,7 @@ build-backend = "scikit_build_core.build"
 [project]
 name = "qi"
 description = "LibQi Python bindings"
-version = "3.1.5"
+version = "3.1.6"
 readme = "README.rst"
 requires-python = ">=3.7"
 license = { "file" = "COPYING" }
@@ -37,16 +37,19 @@ classifiers=[
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3 :: Only",
 ]
 maintainers = [
+    { name = "Thibault Hervier", email = "thibault@fr2g.io" },
     { email = "framework@aldebaran.com" },
     { name = "Vincent Palancher", email = "vincent.palancher@aldebaran.com" },
     { name = "Jérémy Monnon", email = "jmonnon@aldebaran.com" },
 ]
 
 [project.urls]
-repository = "https://github.com/aldebaran/libqi-python"
+repository = "https://https://github.com/funwithagents/libqi-python"
 
 [tool.scikit-build]
 # Rely only on CMake install, not on Python packages detection.
@@ -55,13 +58,3 @@ wheel.packages = []
 [tool.scikit-build.cmake.define]
 # Disable building tests by default when building a wheel.
 BUILD_TESTING = "OFF"
-
-[tool.cibuildwheel]
-build = "cp*manylinux*x86_64"
-build-frontend = "build"
-
-[tool.cibuildwheel.linux]
-before-all = ["ci/cibuildwheel_linux_before_all.sh {package}"]
-
-[tool.cibuildwheel.linux.config-settings]
-"cmake.args" = ["--preset=conan-release"]
