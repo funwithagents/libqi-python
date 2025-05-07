@@ -78,7 +78,7 @@ It should have generated the python wheel :
 - generate (if not already done) your conan profile
     - `conan profile detect`
 - check you conan profile
-    - `cat $HOME/.conan2/profiles/default`
+    - `cat ~/.conan2/profiles/default`
     - it should display something similar to this
         
         ```
