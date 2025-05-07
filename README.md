@@ -21,8 +21,7 @@ These LibQi python bindings correspond to the  `qi` Python module.
 <details>
 <summary>MacOS</summary>
 
->[!NOTE]
->💡 This has been tested on a Mac with arm64 architecture & MacOS Sequoia (15.3.1)
+💡 This has been tested on a Mac with arm64 architecture & MacOS Sequoia (15.3.1)
 
 - setup you python installation (you can use pyenv if you want to be able to choose a specific Python version)
     - `pyenv install 3.13`
@@ -63,8 +62,7 @@ It should have generated the python wheel :
 <details>
 <summary>Linux</summary>
 
->[!NOTE]
->💡 This has been tested on a x86_64 architecture & Ubuntu 22.04
+💡 This has been tested on a x86_64 architecture & Ubuntu 22.04
 
 - install c++ compiler
     - `sudo apt-get install build-essential`
