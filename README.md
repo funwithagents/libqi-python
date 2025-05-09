@@ -6,7 +6,7 @@ These LibQi python bindings correspond to the  `qi` Python module.
 
 ## Up-to-date repository for compatibility with recent Python versions and OS
 
-- This repository is a fork of the official libqi-python repository (that seems to be not maintained by Aldebaran anymore).
+- This repository is a fork of the official [libqi-python](https://github.com/aldebaran/libqi-python) repository (that seems to be not maintained by Aldebaran anymore).
 - I created it mainly to update the code of the package to be able to build it with recent versions of Python (3.10+) on MacOS and Linux
 
 ## Pre-built packages
@@ -21,8 +21,7 @@ These LibQi python bindings correspond to the  `qi` Python module.
 <details>
 <summary>MacOS</summary>
 
->[!NOTE]
->💡 This has been tested on a Mac with arm64 architecture & MacOS Sequoia (15.3.1)
+💡 This has been tested on a Mac with arm64 architecture & MacOS Sequoia (15.3.1)
 
 - setup you python installation (you can use pyenv if you want to be able to choose a specific Python version)
     - `pyenv install 3.13`
@@ -51,8 +50,8 @@ These LibQi python bindings correspond to the  `qi` Python module.
         ```
         
 - execute the build script with all the needed steps
-    - `chmod +x build_wheel_macos.sh`
-    - `./build_wheel_macos.sh`
+    - `chmod +x execute_build_wheel_macos.sh`
+    - `./execute_build_wheel_macos.sh`
 
 🥳 **Congratulations**
 It should have generated the python wheel : 
@@ -63,8 +62,7 @@ It should have generated the python wheel :
 <details>
 <summary>Linux</summary>
 
->[!NOTE]
->💡 This has been tested on a x86_64 architecture & Ubuntu 22.04
+💡 This has been tested on a x86_64 architecture & Ubuntu 22.04
 
 - install c++ compiler
     - `sudo apt-get install build-essential`
@@ -80,7 +78,7 @@ It should have generated the python wheel :
 - generate (if not already done) your conan profile
     - `conan profile detect`
 - check you conan profile
-    - `cat $HOME/.conan2/profiles/default`
+    - `cat ~/.conan2/profiles/default`
     - it should display something similar to this
         
         ```
@@ -95,8 +93,8 @@ It should have generated the python wheel :
         ```
         
 - execute the build script with all the needed steps
-    - `chmod +x build_wheel_linux.sh`
-    - `./build_wheel_linux.sh`
+    - `chmod +x execute_build_wheel_linux.sh`
+    - `./execute_build_wheel_linux.sh`
 
 🥳 **Congratulations**
 It should have generated the python wheel : 
