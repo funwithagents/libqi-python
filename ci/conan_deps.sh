@@ -47,6 +47,10 @@ conan_args=(
     -s compiler.cppstd="$cppstd"
     -c tools.build:skip_test=true
     -c '&:tools.build:skip_test=true'
+    # Retry longer when downloading the sources of a dependency (e.g. from
+    # github.com) fails: 5 times, every 20s (instead of 2 times, every 5s).
+    -c tools.files.download:retry=5
+    -c tools.files.download:retry_wait=20
     # Use a fixed build folder ("build/conan") whatever the platform, so that
     # the paths to the toolchain and to the libraries are known in advance.
     -c "tools.cmake.cmake_layout:build_folder_vars=['const.conan', '!settings.build_type']"

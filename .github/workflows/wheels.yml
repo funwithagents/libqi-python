@@ -1,10 +1,25 @@
 name: Wheels
 
 on:
-  # Release: build the wheels and publish them in a GitHub Release.
   push:
+    # Release: build the wheels and publish them in a GitHub Release.
     tags:
       - "v*"
+    # Also on master, when build-related files change (the paths below do not
+    # apply to tags): the Conan cache it saves can then be used by the pull
+    # requests (a cache saved by a pull request is only visible to itself).
+    branches:
+      - master
+    paths:
+      - "src/**"
+      - "qipython/**"
+      - "qi/**"
+      - "cmake/**"
+      - "ci/**"
+      - "CMakeLists.txt"
+      - "conanfile.py"
+      - "pyproject.toml"
+      - ".github/workflows/wheels.yml"
   # Check that the wheels still build, only when build-related files change.
   pull_request:
     branches:
@@ -22,10 +37,11 @@ on:
   # Manual run from the Actions tab.
   workflow_dispatch:
 
-# A new push on a PR cancels its build still in progress.
+# A new push on a PR cancels its build still in progress (builds on master and
+# on tags are never cancelled).
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -61,8 +77,9 @@ jobs:
         shell: pwsh
         run: '"C:\Program Files\Git\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append'
 
-      # Saved even if the build fails (see below), so that the dependencies
-      # already built are not rebuilt on the next run.
+      # Saved even if the build fails (but not if it is cancelled, the cache
+      # could be incomplete), so that the dependencies already built are not
+      # rebuilt on the next run.
       - name: Restore Conan packages (macOS, Windows)
         if: runner.os != 'Linux'
         uses: actions/cache/restore@v6
@@ -75,7 +92,7 @@ jobs:
         uses: pypa/cibuildwheel@v4.2.1
 
       - name: Save Conan packages (macOS, Windows)
-        if: always() && runner.os != 'Linux'
+        if: (success() || failure()) && runner.os != 'Linux'
         uses: actions/cache/save@v6
         with:
           path: ~/.conan2/p
