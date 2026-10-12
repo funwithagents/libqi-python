@@ -97,4 +97,6 @@ repair-wheel-command = "DYLD_LIBRARY_PATH={project}/build/conan/lib delocate-whe
 # Conan must be installed beforehand (`pipx install conan`), and `bash` must
 # be Git Bash (not WSL).
 before-all = "bash ci/conan_deps.sh ."
-repair-wheel-command = "delvewheel repair --add-path {project}/build/conan/bin -w {dest_dir} {wheel}"
+# Also bundle the MSVC C++ runtime: the wheel is built with a recent MSVC, and
+# an older runtime installed on the user machine may make it crash.
+repair-wheel-command = "delvewheel repair --add-path {project}/build/conan/bin --include msvcp140.dll -w {dest_dir} {wheel}"
