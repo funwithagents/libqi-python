@@ -22,7 +22,7 @@ set -euxo pipefail
 
 PROJECT_DIR=$(cd "${1:-$(dirname "$0")/..}" && pwd)
 QI_REPOSITORY=${QI_REPOSITORY:-https://github.com/funwithagents/libqi.git}
-QI_VERSION=${QI_VERSION:-4.0.5}
+QI_VERSION=${QI_VERSION:-4.0.6}
 QI_PATH="$PROJECT_DIR/build/libqi"
 
 # Clone libqi and load its conanfile into the Conan cache.
