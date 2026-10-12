@@ -6,7 +6,7 @@ build-backend = "scikit_build_core.build"
 # PEP 621
 [project]
 name = "qi"
-description = "LibQi Python bindings"
+description = "LibQi Python bindings (unofficial community fork)"
 version = "3.1.6"
 readme = "README.md"
 requires-python = ">=3.7"
@@ -24,7 +24,7 @@ keywords=[
     "plato",
 ]
 classifiers=[
-    "Development Status :: 5 - Production/Stable",
+    "Development Status :: 4 - Beta",
     "License :: OSI Approved :: BSD License",
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Libraries",
@@ -41,15 +41,17 @@ classifiers=[
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3 :: Only",
 ]
+# Original authors (upstream aldebaran/libqi-python). They do not maintain this fork.
+authors = [
+    { name = "Aldebaran Robotics / SoftBank Robotics Europe" },
+]
 maintainers = [
     { name = "Thibault Hervier", email = "thibault@fr2g.io" },
-    { email = "framework@aldebaran.com" },
-    { name = "Vincent Palancher", email = "vincent.palancher@aldebaran.com" },
-    { name = "Jérémy Monnon", email = "jmonnon@aldebaran.com" },
 ]
 
 [project.urls]
-repository = "https://https://github.com/funwithagents/libqi-python"
+repository = "https://github.com/funwithagents/libqi-python"
+upstream = "https://github.com/aldebaran/libqi-python"
 
 [tool.scikit-build]
 # Rely only on CMake install, not on Python packages detection.

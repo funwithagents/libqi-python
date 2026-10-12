@@ -1,5 +1,11 @@
 # qi package - Python binding for Libqi
 
+> ⚠️ **Unofficial fork.** This repository is a community fork of
+> [aldebaran/libqi-python](https://github.com/aldebaran/libqi-python). It is **not affiliated
+> with, endorsed by, or supported by** Aldebaran, SoftBank Robotics or United Robotics Group.
+> It is maintained on a best-effort basis: fixes are made when I need them, with no
+> guarantee of support or updates. NAO and Pepper are trademarks of their respective owners.
+
 This repository contains the Python bindings of [LibQi](https://github.com/funwithagents/libqi), the library used to communicate with robots using Naoqi (Nao & Pepper).
 
 These LibQi python bindings correspond to the  `qi` Python module.
@@ -11,6 +17,7 @@ These LibQi python bindings correspond to the  `qi` Python module.
 
 ## Pre-built packages
 
+- These wheels are built from this fork and are **not** the official `qi` package published on PyPI by Aldebaran.
 - Check the [Releases](https://github.com/funwithagents/libqi-python/releases) to directly retrieve python wheels compatible with recent version of Python, for MacOS and Linux
 - To install the packages
     - download the wheel file (.whl) corresponding to your python version and OS
@@ -101,3 +108,9 @@ It should have generated the python wheel :
 - in folder `./dist/fixed/`
 - with name similar to `qi-3.1.6-cp313-cp313-manylinux_2_34_x86_64.whl`
 </details>
+
+## License
+
+BSD-3-Clause, same as upstream. See [COPYING](COPYING).
+
+Original code © Aldebaran Robotics / SoftBank Robotics Europe; modifications in this fork © 2025 Thibault Hervier.
