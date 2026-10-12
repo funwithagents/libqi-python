@@ -1,0 +1,44 @@
+name: Package index
+
+# Publishes on GitHub Pages a package index (PEP 503) of the wheels attached to
+# the GitHub Releases, so that pip and uv can install them by version.
+on:
+  # Started by the Wheels workflow after a release (a release created with the
+  # GITHUB_TOKEN does not trigger the "release" event), or manually from the
+  # Actions tab, e.g. after editing or deleting a release.
+  workflow_dispatch:
+
+# A deployment in progress is not cancelled, the next one waits for it.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy package index
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}simple/qi/
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Generate index
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 ci/generate_index.py site
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+      - id: deployment
+        uses: actions/deploy-pages@v5

@@ -24,15 +24,44 @@ These LibQi python bindings correspond to the  `qi` Python module.
     - Linux x86_64, with glibc 2.28+ (Ubuntu 20.04+, Debian 10+, RHEL 8+, ...): `manylinux_2_28_x86_64`
     - MacOS 11+ on Apple Silicon: `macosx_11_0_arm64`
     - Windows x64: `win_amd64` (the MSVC C++ runtime is included in the wheel)
-- To install the packages
-    - download the wheel file (.whl) corresponding to your python version and OS
-    - install the package using `pip install path/to/wheel.whl`
+
+### Installing the wheels
+
+The wheels are listed in a package index hosted on GitHub Pages: https://funwithagents.github.io/libqi-python/simple/ (the wheels themselves are downloaded from the GitHub Releases). pip and uv pick the wheel matching your Python version and OS.
+
+With **uv**, in the `pyproject.toml` of your project:
+
+```toml
+[project]
+dependencies = ["qi==3.1.7"]
+
+[[tool.uv.index]]
+name = "funwithagents"
+url = "https://funwithagents.github.io/libqi-python/simple/"
+explicit = true  # only used for the packages below
+
+[tool.uv.sources]
+qi = { index = "funwithagents" }
+```
+
+`explicit = true` makes uv take `qi` only from this index, never from PyPI (where the official `qi` package of Aldebaran is published).
+
+With **pip**:
+
+```bash
+pip install "qi==3.1.7" --extra-index-url https://funwithagents.github.io/libqi-python/simple/
+```
+
+⚠️ Always pin the version with pip: it looks for `qi` in both PyPI and this index, and installs the highest version found.
+
+You can also download a wheel from the [Releases](https://github.com/funwithagents/libqi-python/releases) and install it with `pip install path/to/wheel.whl`.
 
 ## Continuous integration and releases
 
 The wheels are built by the [Wheels](.github/workflows/wheels.yml) GitHub Actions workflow, with [cibuildwheel](https://cibuildwheel.pypa.io) (configured in `pyproject.toml`):
 - on pull requests to `master` changing build-related files, and on manual runs ("Run workflow" in the Actions tab): the wheels are available as artifacts of the run
 - on tags `v*`: the wheels are also attached to a GitHub Release (a tag with a suffix, like `v3.1.7-rc1`, creates a pre-release)
+- after a release (except pre-releases), the [Package index](.github/workflows/index.yml) workflow regenerates the package index from all the releases (`ci/generate_index.py`) and deploys it to GitHub Pages. Run it manually after editing or deleting a release.
 
 The C++ dependencies (libqi, boost, openssl, ...) are built once per platform with Conan by `ci/conan_deps.sh`, then reused for all Python versions. Each wheel is tested by `ci/smoke_test.py`.
 
