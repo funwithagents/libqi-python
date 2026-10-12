@@ -1,0 +1,106 @@
+name: Wheels
+
+on:
+  # Release: build the wheels and publish them in a GitHub Release.
+  push:
+    tags:
+      - "v*"
+  # Check that the wheels still build, only when build-related files change.
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "src/**"
+      - "qipython/**"
+      - "qi/**"
+      - "cmake/**"
+      - "ci/**"
+      - "CMakeLists.txt"
+      - "conanfile.py"
+      - "pyproject.toml"
+      - ".github/workflows/wheels.yml"
+  # Manual run from the Actions tab.
+  workflow_dispatch:
+
+# A new push on a PR cancels its build still in progress.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build_wheels:
+    name: Wheels ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux-x86_64
+            os: ubuntu-24.04
+          - name: macos-arm64
+            os: macos-15
+
+    steps:
+      - uses: actions/checkout@v7
+
+      # On macOS, the Conan dependencies are built on the runner itself, so
+      # their cache can be kept between runs (on Linux they are built inside
+      # the manylinux container).
+      - name: Install Conan (macOS)
+        if: runner.os == 'macOS'
+        run: pipx install 'conan>=2'
+
+      - name: Cache Conan packages (macOS)
+        if: runner.os == 'macOS'
+        uses: actions/cache@v6
+        with:
+          path: ~/.conan2/p
+          key: conan-${{ matrix.name }}-${{ hashFiles('conanfile.py', 'ci/build_deps.sh') }}
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v4.2.1
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: wheels-${{ matrix.name }}
+          path: wheelhouse/*.whl
+
+  release:
+    name: GitHub Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build_wheels
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v7
+
+      # A tag "vX.Y.Z" (or "vX.Y.Z-rcN") must match the version in pyproject.toml.
+      - name: Check tag matches package version
+        run: |
+          tag_version="${GITHUB_REF_NAME#v}"
+          tag_version="${tag_version%%-*}"
+          package_version=$(sed -nE 's/^version = "(.*)"/\1/p' pyproject.toml)
+          if [ "$tag_version" != "$package_version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match version $package_version in pyproject.toml"
+            exit 1
+          fi
+
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: wheels-*
+          path: dist
+          merge-multiple: true
+
+      # Tags with a suffix (e.g. "v3.1.7-rc1") are published as pre-releases.
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          prerelease=""
+          if [[ "$GITHUB_REF_NAME" == *-* ]]; then prerelease="--prerelease"; fi
+          gh release create "$GITHUB_REF_NAME" dist/*.whl --generate-notes $prerelease
