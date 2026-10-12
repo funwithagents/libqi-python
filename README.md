@@ -59,7 +59,7 @@ You can also download a wheel from the [Releases](https://github.com/funwithagen
 ## Continuous integration and releases
 
 The wheels are built by the [Wheels](.github/workflows/wheels.yml) GitHub Actions workflow, with [cibuildwheel](https://cibuildwheel.pypa.io) (configured in `pyproject.toml`):
-- on pull requests to `master` changing build-related files, and on manual runs ("Run workflow" in the Actions tab): the wheels are available as artifacts of the run
+- on pull requests to `master` and on `master` itself, when build-related files change, and on manual runs ("Run workflow" in the Actions tab): the wheels are available as artifacts of the run
 - on tags `v*`: the wheels are also attached to a GitHub Release (a tag with a suffix, like `v3.1.7-rc1`, creates a pre-release)
 - after a release (except pre-releases), the [Package index](.github/workflows/index.yml) workflow regenerates the package index from all the releases (`ci/generate_index.py`) and deploys it to GitHub Pages. Run it manually after editing or deleting a release.
 
