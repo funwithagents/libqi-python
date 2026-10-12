@@ -1,0 +1,50 @@
+#!/bin/bash
+# Build the C++ dependencies of the qi Python module (libqi, boost, openssl, ...)
+# with Conan.
+#
+# Usage: ci/conan_deps.sh [PROJECT_DIR]
+#
+# The dependencies do not depend on the Python version, so this only needs to
+# be run once before building the wheels for any number of Python versions.
+# It produces, in PROJECT_DIR/build/conan:
+#   - generators/conan_toolchain.cmake: the CMake toolchain to build the wheel.
+#   - lib/: the dependencies shared libraries, needed to repair the wheel
+#     (auditwheel on Linux, delocate on macOS).
+#
+# Environment variables:
+#   QI_REPOSITORY             libqi git repository.
+#   QI_VERSION                libqi version, cloned from tag "qi-framework-v<QI_VERSION>".
+#   CONAN_BUILD               value of `conan install --build` (default: "missing").
+#   MACOSX_DEPLOYMENT_TARGET  (macOS only) minimum macOS version of the wheel
+#                             (default: "11.0").
+
+set -euxo pipefail
+
+PROJECT_DIR=$(cd "${1:-$(dirname "$0")/..}" && pwd)
+QI_REPOSITORY=${QI_REPOSITORY:-https://github.com/funwithagents/libqi.git}
+QI_VERSION=${QI_VERSION:-4.0.5}
+QI_PATH="$PROJECT_DIR/build/libqi"
+
+# Clone libqi and load its conanfile into the Conan cache.
+rm -rf "$QI_PATH"
+git clone --depth=1 --branch "qi-framework-v${QI_VERSION}" "$QI_REPOSITORY" "$QI_PATH"
+conan profile detect --exist-ok
+conan export "$QI_PATH" --version "$QI_VERSION"
+
+conan_args=(
+    --build="${CONAN_BUILD:-missing}"
+    -s build_type=Release
+    -s compiler.cppstd=gnu17
+    -c tools.build:skip_test=true
+    -c '&:tools.build:skip_test=true'
+    # Use a fixed build folder ("build/conan") whatever the platform, so that
+    # the paths to the toolchain and to the libraries are known in advance.
+    -c "tools.cmake.cmake_layout:build_folder_vars=['const.conan', '!settings.build_type']"
+)
+if [[ "$(uname)" == "Darwin" ]]; then
+    # Build the dependencies for the same minimum macOS version as the wheel,
+    # otherwise delocate refuses to bundle them in the wheel.
+    conan_args+=(-s "os.version=${MACOSX_DEPLOYMENT_TARGET:-11.0}")
+fi
+
+conan install "$PROJECT_DIR" "${conan_args[@]}"
