@@ -1,28 +1,20 @@
 #!/bin/bash
+# Build the qi wheel for the current Python version, on macOS.
+# The wheel is generated in ./dist/fixed/
+set -euxo pipefail
+cd "$(dirname "$0")"
 
-# Set needed variables for libqi repository dependency
-QI_REPOSITORY="https://github.com/funwithagents/libqi.git"
-QI_VERSION="4.0.5"
-QI_PATH="$PWD/../libqi"
-rm -rf $QI_PATH
-# Clone liqi respository
-git clone --depth=1 --branch "qi-framework-v${QI_VERSION}" "${QI_REPOSITORY}" "${QI_PATH}"
-# Link the libqi dependency by loading its conanfile into conan cache 
-conan export "${QI_PATH}" --version "${QI_VERSION}" 
+# Minimum macOS version supported by the wheel (and its dependencies)
+export MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET:-11.0}
 
-# Build
-conan install . --build=missing -c tools.build:skip_test=true -c '&:tools.build:skip_test=true'
-cmake --list-presets # => it should list the preset "conan-macos-armv8-apple-clang-release"
-cmake --preset conan-macos-armv8-apple-clang-release
-cmake --preset conan-macos-armv8-apple-clang-release
+# Build the C++ dependencies (libqi, boost, ...) with Conan, in ./build/conan
+bash ci/conan_deps.sh .
+
 # Generate wheel
-python -m build --config-setting cmake.define.CMAKE_TOOLCHAIN_FILE=$PWD/build/macos-armv8-apple-clang-release/generators/conan_toolchain.cmake
-
-# Retrieve python version as "3Y" for 3.Y.Z ("313" for python 3.13.Z)
-python_version=$(python --version 2>&1 | awk '{print $2}' | cut -d'.' -f1,2 | sed 's/\.//g')
-# Retrieve macOS major version
-macos_version=$(sw_vers -productVersion)
-macos_major_version=$(echo $macos_version | cut -d'.' -f1)
+rm -rf build/wheel
+python -m build --wheel --outdir build/wheel \
+    --config-setting cmake.define.CMAKE_TOOLCHAIN_FILE="$PWD/build/conan/generators/conan_toolchain.cmake"
+wheel=$(ls build/wheel/*.whl)
 
 # Repair wheel (using all the dependency libs that have been previously copied by conan)
-DYLD_LIBRARY_PATH=$PWD/build/macos-armv8-apple-clang-release/lib delocate-wheel -w ./dist/fixed/ --check-archs  ./dist/qi-3.1.6-cp${python_version}-cp${python_version}-macosx_${macos_major_version}_0_arm64.whl
+DYLD_LIBRARY_PATH="$PWD/build/conan/lib" delocate-wheel --check-archs -w ./dist/fixed/ "$wheel"
