@@ -125,7 +125,7 @@ bool isUnboundMethod(const ::py::function& func, const ::py::object& object)
     }
 
     // Fallback to just returning the function.
-    return std::move(func);
+    return func;
   }
   catch (const std::exception& ex)
   {

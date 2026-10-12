@@ -49,7 +49,7 @@ struct WithArgcArgv
     std::transform(argsStr.begin(), argsStr.end(), std::back_inserter(argsCStr),
                    [](const std::string& s) { return const_cast<char*>(s.c_str()); });
 
-    int argc = argsCStr.size();
+    int argc = static_cast<int>(argsCStr.size());
     char** argv = argsCStr.data();
 
     auto res = f(argc, argv, std::forward<ArgsExtras>(extras)...);

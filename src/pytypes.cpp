@@ -642,7 +642,7 @@ public:
   AnyIterator end(void* storage) override
   {
     return AnyValue(AnyReference(instance<IteratorInterface>(),
-                                 new Iterator(storage, size(storage))),
+                                 new Iterator(storage, static_cast<unsigned int>(size(storage)))),
                     // Do not copy, but free the value, so basically the AnyValue
                     // takes ownership of the object.
                     false, true);
@@ -728,7 +728,7 @@ public:
   AnyIterator end(void* storage) override
   {
     return AnyValue(AnyReference(instance<IteratorInterface>(),
-                                 new Iterator(storage, size(storage))),
+                                 new Iterator(storage, static_cast<unsigned int>(size(storage)))),
                     // Do not copy, but free the value, so basically the AnyValue
                     // takes ownership of the object.
                     false, true);
