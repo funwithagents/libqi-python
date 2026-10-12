@@ -91,7 +91,7 @@ struct ValueToPyObject
     // try to create a Python `bytes` instead.
     const auto toUnicode = [&] {
       const auto obj = ::py::reinterpret_steal<::py::str>(
-        PyUnicode_FromStringAndSize(data, static_cast<ssize_t>(len)));
+        PyUnicode_FromStringAndSize(data, static_cast<Py_ssize_t>(len)));
       // When it fails, the conversion may set a Python error. We need to handle
       // it by throwing `error_already_set`.
       if (!obj)
@@ -642,7 +642,7 @@ public:
   AnyIterator end(void* storage) override
   {
     return AnyValue(AnyReference(instance<IteratorInterface>(),
-                                 new Iterator(storage, size(storage))),
+                                 new Iterator(storage, static_cast<unsigned int>(size(storage)))),
                     // Do not copy, but free the value, so basically the AnyValue
                     // takes ownership of the object.
                     false, true);
@@ -728,7 +728,7 @@ public:
   AnyIterator end(void* storage) override
   {
     return AnyValue(AnyReference(instance<IteratorInterface>(),
-                                 new Iterator(storage, size(storage))),
+                                 new Iterator(storage, static_cast<unsigned int>(size(storage)))),
                     // Do not copy, but free the value, so basically the AnyValue
                     // takes ownership of the object.
                     false, true);

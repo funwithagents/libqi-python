@@ -60,6 +60,10 @@ wheel.packages = []
 [tool.scikit-build.cmake.define]
 # Disable building tests by default when building a wheel.
 BUILD_TESTING = "OFF"
+# Only generate the Release configuration with multi-config generators (Visual
+# Studio): the Conan dependencies are only available in Release (ignored by
+# single-config generators).
+CMAKE_CONFIGURATION_TYPES = "Release"
 
 # Wheels building with cibuildwheel (used by the GitHub Actions workflow, can
 # also be run locally, see README).
@@ -92,3 +96,10 @@ repair-wheel-command = "LD_LIBRARY_PATH={project}/build/conan/lib auditwheel rep
 before-all = "bash {project}/ci/conan_deps.sh {project}"
 environment = { MACOSX_DEPLOYMENT_TARGET = "11.0" }
 repair-wheel-command = "DYLD_LIBRARY_PATH={project}/build/conan/lib delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
+
+[tool.cibuildwheel.windows]
+# Conan must be installed beforehand (`pipx install conan`), and `bash` must
+# be Git Bash (not WSL).
+before-all = "bash ci/conan_deps.sh ."
+# Also bundles the MSVC C++ runtime matching the compiler (see the script).
+repair-wheel-command = "python {project}/ci/repair_wheel_windows.py {wheel} {dest_dir}"

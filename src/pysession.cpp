@@ -34,7 +34,8 @@ namespace
 
     void operator()(Session* p) const
     {
-      constexpr const auto category = "qi.python.session.deleter";
+      // Unused when debug logs are compiled out (release builds).
+      [[maybe_unused]] constexpr const auto category = "qi.python.session.deleter";
       constexpr const auto msg = "Waiting for the shared pointer destruction...";
       GILRelease x;
       auto fut = std::async(std::launch::async, [=](std::unique_ptr<Session>) {
