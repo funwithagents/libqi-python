@@ -1,8 +1,0 @@
-version = 1
-revision = 3
-requires-python = ">=3.7"
-
-[[package]]
-name = "qi"
-version = "3.1.6"
-source = { editable = "." }
