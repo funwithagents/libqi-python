@@ -19,61 +19,42 @@ These LibQi python bindings correspond to the  `qi` Python module.
 
 - These wheels are built from this fork and are **not** the official `qi` package published on PyPI by Aldebaran.
 - Check the [Releases](https://github.com/funwithagents/libqi-python/releases) to directly retrieve python wheels compatible with recent version of Python, for MacOS and Linux
+- Available wheels (built by GitHub Actions, see below)
+    - Python 3.10 to 3.15
+    - Linux x86_64, with glibc 2.28+ (Ubuntu 20.04+, Debian 10+, RHEL 8+, ...): `manylinux_2_28_x86_64`
+    - MacOS 11+ on Apple Silicon: `macosx_11_0_arm64`
 - To install the packages
     - download the wheel file (.whl) corresponding to your python version and OS
     - install the package using `pip install path/to/wheel.whl`
 
+## Continuous integration and releases
+
+The wheels are built by the [Wheels](.github/workflows/wheels.yml) GitHub Actions workflow, with [cibuildwheel](https://cibuildwheel.pypa.io) (configured in `pyproject.toml`):
+- on pull requests to `master` changing build-related files, and on manual runs ("Run workflow" in the Actions tab): the wheels are available as artifacts of the run
+- on tags `v*`: the wheels are also attached to a GitHub Release (a tag with a suffix, like `v3.1.7-rc1`, creates a pre-release)
+
+The C++ dependencies (libqi, boost, openssl, ...) are built once per platform with Conan by `ci/conan_deps.sh`, then reused for all Python versions. Each wheel is tested by `ci/smoke_test.py`.
+
+To release a new version:
+- update `version` in `pyproject.toml` and merge it in `master`
+- tag it and push the tag (the tag must match the version, otherwise the release fails): `git tag v3.1.7 && git push origin v3.1.7`
+
 ## Building from sources
 
-<details>
-<summary>MacOS</summary>
+The build scripts below build the wheel for the Python version of your environment:
+- the C++ dependencies (libqi, boost, openssl, ...) are built with Conan by `ci/conan_deps.sh` (the same script as the CI), in `./build/conan/`
+- the default Conan profile is created if needed (`conan profile detect`)
 
-💡 This has been tested on a Mac with arm64 architecture & MacOS Sequoia (15.3.1)
-
-- setup you python installation (you can use pyenv if you want to be able to choose a specific Python version)
-    - `pyenv install 3.13`
-    - `pyenv global 3.13`
-- setup a python environment and switch to it (for example using venv)
-    - `python -m venv ~/py-venv/py3.13-buildlibqipython`
-    - `source ~/py-venv/py3.13-buildlibqipython/bin/activate`
-- install needed python packages
-    - `pip install -r requirements_macos.txt`
-- clone this repository and go to the root of it
-- generate (if not already done) your conan profile
-    - `conan profile detect`
-- check you conan profile
-    - `cat ~/.conan2/profiles/default`
-    - it should display something similar to this
-        
-        ```
-        [settings]
-        arch=armv8
-        build_type=Release
-        compiler=apple-clang
-        compiler.cppstd=gnu17
-        compiler.libcxx=libc++
-        compiler.version=16
-        os=Macos
-        ```
-        
-- execute the build script with all the needed steps
-    - `chmod +x execute_build_wheel_macos.sh`
-    - `./execute_build_wheel_macos.sh`
-
-🥳 **Congratulations**
-It should have generated the python wheel : 
-- in folder `./dist/fixed/`
-- with name similar to `qi-3.1.6-cp313-cp313-macosx_15_0_arm64.whl`
-</details>
+💡 To build the wheels for all Python versions exactly like the CI, you can instead run cibuildwheel locally: `pipx install conan && pipx run cibuildwheel` (Linux builds run in a manylinux container and need Docker). The wheels are generated in `./wheelhouse/`.
 
 <details>
 <summary>Linux</summary>
 
-💡 This has been tested on a x86_64 architecture & Ubuntu 22.04
+💡 Built and tested by the CI on x86_64 (manylinux_2_28 container, GCC 14). Local builds were also tested on Ubuntu 22.04.
 
-- install c++ compiler
+- install a C++ compiler
     - `sudo apt-get install build-essential`
-- setup you python installation (you can use pyenv if you want to be able to choose a specific Python version)
+- setup your python installation (you can use pyenv if you want to be able to choose a specific Python version)
     - `pyenv install 3.13`
     - `pyenv global 3.13`
 - setup a python environment and switch to it (for example using venv)
@@ -82,31 +63,42 @@ It should have generated the python wheel :
 - install needed python packages
     - `pip install -r requirements_linux.txt`
 - clone this repository and go to the root of it
-- generate (if not already done) your conan profile
-    - `conan profile detect`
-- check you conan profile
-    - `cat ~/.conan2/profiles/default`
-    - it should display something similar to this
-        
-        ```
-        [settings]
-        arch=x86_64
-        build_type=Release
-        compiler=gcc
-        compiler.cppstd=gnu17
-        compiler.libcxx=libstdc++11
-        compiler.version=11
-        os=Linux
-        ```
-        
 - execute the build script with all the needed steps
     - `chmod +x execute_build_wheel_linux.sh`
     - `./execute_build_wheel_linux.sh`
 
 🥳 **Congratulations**
-It should have generated the python wheel : 
+It should have generated the python wheel :
 - in folder `./dist/fixed/`
 - with name similar to `qi-3.1.6-cp313-cp313-manylinux_2_34_x86_64.whl`
+- the platform tag depends on the glibc version of your machine (the CI builds in an older environment to support more distributions)
+</details>
+
+<details>
+<summary>MacOS</summary>
+
+💡 Built and tested by the CI on arm64 (MacOS 15, Xcode 16). Local builds were also tested on MacOS Sequoia (15.3.1).
+
+- install a C++ compiler
+    - `xcode-select --install`
+- setup your python installation (you can use pyenv if you want to be able to choose a specific Python version)
+    - `pyenv install 3.13`
+    - `pyenv global 3.13`
+- setup a python environment and switch to it (for example using venv)
+    - `python -m venv ~/py-venv/py3.13-buildlibqipython`
+    - `source ~/py-venv/py3.13-buildlibqipython/bin/activate`
+- install needed python packages
+    - `pip install -r requirements_macos.txt`
+- clone this repository and go to the root of it
+- execute the build script with all the needed steps
+    - `chmod +x execute_build_wheel_macos.sh`
+    - `./execute_build_wheel_macos.sh`
+
+🥳 **Congratulations**
+It should have generated the python wheel :
+- in folder `./dist/fixed/`
+- with name similar to `qi-3.1.6-cp313-cp313-macosx_11_0_arm64.whl`
+- the wheel is compatible with MacOS 11+ (set `MACOSX_DEPLOYMENT_TARGET` to change it)
 </details>
 
 ## License

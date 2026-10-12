@@ -1,28 +1,20 @@
 #!/bin/bash
+# Build the qi wheel for the current Python version, on Linux.
+# The wheel is generated in ./dist/fixed/
+set -euxo pipefail
+cd "$(dirname "$0")"
 
-# Set needed variables for libqi repository dependency
-QI_REPOSITORY="https://github.com/funwithagents/libqi.git"
-QI_VERSION="4.0.5"
-QI_PATH="$PWD/../libqi"
-rm -rf $QI_PATH
-# Clone liqi respository
-git clone --depth=1 --branch "qi-framework-v${QI_VERSION}" "${QI_REPOSITORY}" "${QI_PATH}"
-# Link the libqi dependency by loading its conanfile into conan cache 
-conan export "${QI_PATH}" --version "${QI_VERSION}" 
-
-# Build
-conan install . --build=missing -c tools.build:skip_test=true -c '&:tools.build:skip_test=true'
-cmake --list-presets # => it should list the preset "conan-linux-x86_64-gcc-release"
-cmake --preset conan-linux-x86_64-gcc-release
-cmake --build --preset conan-linux-x86_64-gcc-release -j8
+# Build the C++ dependencies (libqi, boost, ...) with Conan, in ./build/conan
+bash ci/conan_deps.sh .
 
 # Generate wheel
-python -m build --config-setting cmake.define.CMAKE_TOOLCHAIN_FILE=$PWD/build/linux-x86_64-gcc-release/generators/conan_toolchain.cmake
+rm -rf build/wheel
+python -m build --wheel --outdir build/wheel \
+    --config-setting cmake.define.CMAKE_TOOLCHAIN_FILE="$PWD/build/conan/generators/conan_toolchain.cmake"
+wheel=$(ls build/wheel/*.whl)
 
-# Retrieve python version as "3Y" for 3.Y.Z ("313" for python 3.13.Z)
-python_version=$(python --version 2>&1 | awk '{print $2}' | cut -d'.' -f1,2 | sed 's/\.//g')
 # Retrieve the platform compatibility for the wheel, using auditwheel show
-constraint_tag=$(auditwheel show ./dist/qi-3.1.6-cp${python_version}-cp${python_version}-linux_x86_64.whl | grep 'This constrains the platform tag to' | sed -E 's/.*"([^"]+)".*/\1/')
+constraint_tag=$(auditwheel show "$wheel" | grep 'This constrains the platform tag to' | sed -E 's/.*"([^"]+)".*/\1/')
 
 # Repair wheel (using all the dependency libs that have been previously copied by conan)
-LD_LIBRARY_PATH=$PWD/build/linux-x86_64-gcc-release/lib/ auditwheel repair --strip --plat ${constraint_tag} dist/qi-3.1.6-cp${python_version}-cp${python_version}-linux_x86_64.whl -w ./dist/fixed/
+LD_LIBRARY_PATH="$PWD/build/conan/lib" auditwheel repair --plat "$constraint_tag" -w ./dist/fixed/ "$wheel"
