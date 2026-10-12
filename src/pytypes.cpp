@@ -91,7 +91,7 @@ struct ValueToPyObject
     // try to create a Python `bytes` instead.
     const auto toUnicode = [&] {
       const auto obj = ::py::reinterpret_steal<::py::str>(
-        PyUnicode_FromStringAndSize(data, static_cast<ssize_t>(len)));
+        PyUnicode_FromStringAndSize(data, static_cast<Py_ssize_t>(len)));
       // When it fails, the conversion may set a Python error. We need to handle
       // it by throwing `error_already_set`.
       if (!obj)
