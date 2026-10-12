@@ -8,8 +8,9 @@
 # be run once before building the wheels for any number of Python versions.
 # It produces, in PROJECT_DIR/build/conan:
 #   - generators/conan_toolchain.cmake: the CMake toolchain to build the wheel.
-#   - lib/: the dependencies shared libraries, needed to repair the wheel
-#     (auditwheel on Linux, delocate on macOS).
+#   - lib/ (bin/ on Windows): the dependencies shared libraries, needed to
+#     repair the wheel (auditwheel on Linux, delocate on macOS, delvewheel on
+#     Windows).
 #
 # Environment variables:
 #   QI_REPOSITORY             libqi git repository.
@@ -31,10 +32,16 @@ git clone --depth=1 --branch "qi-framework-v${QI_VERSION}" "$QI_REPOSITORY" "$QI
 conan profile detect --exist-ok
 conan export "$QI_PATH" --version "$QI_VERSION"
 
+case "$(uname)" in
+    # MSVC does not support the GNU extensions.
+    MINGW*|MSYS*|CYGWIN*) cppstd=17 ;;
+    *) cppstd=gnu17 ;;
+esac
+
 conan_args=(
     --build="${CONAN_BUILD:-missing}"
     -s build_type=Release
-    -s compiler.cppstd=gnu17
+    -s compiler.cppstd="$cppstd"
     -c tools.build:skip_test=true
     -c '&:tools.build:skip_test=true'
     # Use a fixed build folder ("build/conan") whatever the platform, so that

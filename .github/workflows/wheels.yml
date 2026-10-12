@@ -42,19 +42,27 @@ jobs:
             os: ubuntu-24.04
           - name: macos-arm64
             os: macos-15
+          - name: windows-x64
+            os: windows-2025
 
     steps:
       - uses: actions/checkout@v7
 
-      # On macOS, the Conan dependencies are built on the runner itself, so
-      # their cache can be kept between runs (on Linux they are built inside
-      # the manylinux container).
-      - name: Install Conan (macOS)
-        if: runner.os == 'macOS'
+      # On macOS and Windows, the Conan dependencies are built on the runner
+      # itself, so their cache can be kept between runs (on Linux they are
+      # built inside the manylinux container).
+      - name: Install Conan (macOS, Windows)
+        if: runner.os != 'Linux'
         run: pipx install 'conan>=2'
 
-      - name: Cache Conan packages (macOS)
-        if: runner.os == 'macOS'
+      # cibuildwheel runs `bash` from cmd: make sure it is Git Bash, not WSL.
+      - name: Use Git Bash (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: '"C:\Program Files\Git\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append'
+
+      - name: Cache Conan packages (macOS, Windows)
+        if: runner.os != 'Linux'
         uses: actions/cache@v6
         with:
           path: ~/.conan2/p
