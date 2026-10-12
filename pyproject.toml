@@ -60,6 +60,10 @@ wheel.packages = []
 [tool.scikit-build.cmake.define]
 # Disable building tests by default when building a wheel.
 BUILD_TESTING = "OFF"
+# Only generate the Release configuration with multi-config generators (Visual
+# Studio): the Conan dependencies are only available in Release (ignored by
+# single-config generators).
+CMAKE_CONFIGURATION_TYPES = "Release"
 
 # Wheels building with cibuildwheel (used by the GitHub Actions workflow, can
 # also be run locally, see README).
