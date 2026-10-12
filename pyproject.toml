@@ -79,9 +79,9 @@ manylinux-x86_64-image = "manylinux_2_28"
 manylinux-aarch64-image = "manylinux_2_28"
 # Build every dependency from sources, so that they are linked against the
 # glibc of the manylinux image (precompiled Conan binaries may require a newer
-# one). Perl modules are needed to build OpenSSL.
+# one). Perl core modules are needed to build OpenSSL.
 before-all = [
-    "yum install -y perl-IPC-Cmd perl-Digest-SHA",
+    "yum install -y perl-core",
     "pipx install 'conan>=2'",
     "CONAN_BUILD='*' bash {project}/ci/conan_deps.sh {project}",
 ]
