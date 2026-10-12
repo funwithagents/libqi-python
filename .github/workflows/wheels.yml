@@ -93,6 +93,7 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: write
+      actions: write
 
     steps:
       - uses: actions/checkout@v7
@@ -122,3 +123,12 @@ jobs:
           prerelease=""
           if [[ "$GITHUB_REF_NAME" == *-* ]]; then prerelease="--prerelease"; fi
           gh release create "$GITHUB_REF_NAME" dist/*.whl --generate-notes $prerelease
+
+      # Adds the new wheels to the package index on GitHub Pages (pre-releases
+      # are not in it). Run on master: the "github-pages" environment only
+      # accepts deployments from the default branch, not from tags.
+      - name: Update package index
+        if: ${{ !contains(github.ref_name, '-') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run index.yml --ref master
