@@ -65,15 +65,25 @@ jobs:
         shell: pwsh
         run: '"C:\Program Files\Git\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append'
 
-      - name: Cache Conan packages (macOS, Windows)
+      # Saved even if the build fails (see below), so that the dependencies
+      # already built are not rebuilt on the next run.
+      - name: Restore Conan packages (macOS, Windows)
         if: runner.os != 'Linux'
-        uses: actions/cache@v6
+        uses: actions/cache/restore@v6
         with:
           path: ~/.conan2/p
-          key: conan-${{ matrix.name }}-${{ hashFiles('conanfile.py', 'ci/conan_deps.sh') }}
+          key: conan-${{ matrix.name }}-${{ hashFiles('conanfile.py', 'ci/conan_deps.sh') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: conan-${{ matrix.name }}-${{ hashFiles('conanfile.py', 'ci/conan_deps.sh') }}-
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v4.2.1
+
+      - name: Save Conan packages (macOS, Windows)
+        if: always() && runner.os != 'Linux'
+        uses: actions/cache/save@v6
+        with:
+          path: ~/.conan2/p
+          key: conan-${{ matrix.name }}-${{ hashFiles('conanfile.py', 'ci/conan_deps.sh') }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - uses: actions/upload-artifact@v7
         with:
