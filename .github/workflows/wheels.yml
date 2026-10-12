@@ -34,10 +34,6 @@ jobs:
   build_wheels:
     name: Wheels ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
-    env:
-      # TEMPORARY: test the libqi branch with the Windows (MSVC) fixes.
-      QI_REF: windows-msvc
-      CIBW_ENVIRONMENT_PASS_LINUX: QI_REF
     strategy:
       fail-fast: false
       matrix:

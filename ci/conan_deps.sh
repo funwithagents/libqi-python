@@ -25,7 +25,7 @@ set -euxo pipefail
 
 PROJECT_DIR=$(cd "${1:-$(dirname "$0")/..}" && pwd)
 QI_REPOSITORY=${QI_REPOSITORY:-https://github.com/funwithagents/libqi.git}
-QI_VERSION=${QI_VERSION:-4.0.6}
+QI_VERSION=${QI_VERSION:-4.0.7}
 QI_REF=${QI_REF:-qi-framework-v${QI_VERSION}}
 QI_PATH="$PROJECT_DIR/build/libqi"
 

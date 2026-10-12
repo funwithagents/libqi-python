@@ -18,11 +18,12 @@ These LibQi python bindings correspond to the  `qi` Python module.
 ## Pre-built packages
 
 - These wheels are built from this fork and are **not** the official `qi` package published on PyPI by Aldebaran.
-- Check the [Releases](https://github.com/funwithagents/libqi-python/releases) to directly retrieve python wheels compatible with recent version of Python, for MacOS and Linux
+- Check the [Releases](https://github.com/funwithagents/libqi-python/releases) to directly retrieve python wheels compatible with recent version of Python, for Linux, MacOS and Windows
 - Available wheels (built by GitHub Actions, see below)
     - Python 3.10 to 3.15
     - Linux x86_64, with glibc 2.28+ (Ubuntu 20.04+, Debian 10+, RHEL 8+, ...): `manylinux_2_28_x86_64`
     - MacOS 11+ on Apple Silicon: `macosx_11_0_arm64`
+    - Windows x64: `win_amd64` (the MSVC C++ runtime is included in the wheel)
 - To install the packages
     - download the wheel file (.whl) corresponding to your python version and OS
     - install the package using `pip install path/to/wheel.whl`
@@ -99,6 +100,28 @@ It should have generated the python wheel :
 - in folder `./dist/fixed/`
 - with name similar to `qi-3.1.6-cp313-cp313-macosx_11_0_arm64.whl`
 - the wheel is compatible with MacOS 11+ (set `MACOSX_DEPLOYMENT_TARGET` to change it)
+</details>
+
+<details>
+<summary>Windows</summary>
+
+💡 Built and tested by the CI on x64 (Windows Server 2025, Visual Studio 2026). There is no dedicated build script on Windows: the wheel is built with cibuildwheel, like the CI.
+
+- install a C++ compiler
+    - [Visual Studio](https://visualstudio.microsoft.com/downloads/) or its Build Tools, with the "Desktop development with C++" workload
+- install [Git for Windows](https://gitforwindows.org/) (its Git Bash runs `ci/conan_deps.sh`: make sure that `bash` in your `PATH` is Git Bash, not WSL)
+- install [Python](https://www.python.org/downloads/windows/) and pipx
+    - `python -m pip install --user pipx`
+- install needed tools
+    - `pipx install conan`
+- clone this repository and go to the root of it
+- build the wheel for one Python version (here 3.13)
+    - `pipx run cibuildwheel --only cp313-win_amd64`
+
+🥳 **Congratulations**
+It should have generated the python wheel :
+- in folder `./wheelhouse/`
+- with name similar to `qi-3.1.6-cp313-cp313-win_amd64.whl`
 </details>
 
 ## License
