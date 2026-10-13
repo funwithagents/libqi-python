@@ -21,8 +21,8 @@ These LibQi python bindings correspond to the  `qi` Python module.
 - Check the [Releases](https://github.com/funwithagents/libqi-python/releases) to directly retrieve python wheels compatible with recent version of Python, for Linux, MacOS and Windows
 - Available wheels (built by GitHub Actions, see below)
     - Python 3.10 to 3.15
-    - Linux x86_64, with glibc 2.28+ (Ubuntu 20.04+, Debian 10+, RHEL 8+, ...): `manylinux_2_28_x86_64`
-    - MacOS 11+ on Apple Silicon: `macosx_11_0_arm64`
+    - Linux x86_64 and aarch64, with glibc 2.28+ (Ubuntu 20.04+, Debian 10+, RHEL 8+, ...): `manylinux_2_28_x86_64`, `manylinux_2_28_aarch64`
+    - MacOS 11+ on Apple Silicon and Intel: `macosx_11_0_arm64`, `macosx_11_0_x86_64`
     - Windows x64: `win_amd64` (the MSVC C++ runtime is included in the wheel)
 
 ### Installing the wheels
@@ -80,7 +80,7 @@ The build scripts below build the wheel for the Python version of your environme
 <details>
 <summary>Linux</summary>
 
-💡 Built and tested by the CI on x86_64 (manylinux_2_28 container, GCC 14). Local builds were also tested on Ubuntu 22.04.
+💡 Built and tested by the CI on x86_64 and aarch64 (manylinux_2_28 container, GCC 14). Local builds were also tested on Ubuntu 22.04.
 
 - install a C++ compiler
     - `sudo apt-get install build-essential`
@@ -107,7 +107,7 @@ It should have generated the python wheel :
 <details>
 <summary>MacOS</summary>
 
-💡 Built and tested by the CI on arm64 (MacOS 15, Xcode 16). Local builds were also tested on MacOS Sequoia (15.3.1).
+💡 Built and tested by the CI on arm64 and x86_64 (MacOS 15, Xcode 16). Local builds were also tested on MacOS Sequoia (15.3.1).
 
 - install a C++ compiler
     - `xcode-select --install`
