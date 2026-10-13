@@ -33,7 +33,7 @@ With **uv**, in the `pyproject.toml` of your project:
 
 ```toml
 [project]
-dependencies = ["qi==3.1.7"]
+dependencies = ["qi==3.1.8"]
 
 [[tool.uv.index]]
 name = "funwithagents"
@@ -49,7 +49,7 @@ qi = { index = "funwithagents" }
 With **pip**:
 
 ```bash
-pip install "qi==3.1.7" --extra-index-url https://funwithagents.github.io/libqi-python/simple/
+pip install "qi==3.1.8" --extra-index-url https://funwithagents.github.io/libqi-python/simple/
 ```
 
 ⚠️ Always pin the version with pip: it looks for `qi` in both PyPI and this index, and installs the highest version found.
@@ -100,7 +100,7 @@ The build scripts below build the wheel for the Python version of your environme
 🥳 **Congratulations**
 It should have generated the python wheel :
 - in folder `./dist/fixed/`
-- with name similar to `qi-3.1.7-cp313-cp313-manylinux_2_34_x86_64.whl`
+- with name similar to `qi-3.1.8-cp313-cp313-manylinux_2_34_x86_64.whl`
 - the platform tag depends on the glibc version of your machine (the CI builds in an older environment to support more distributions)
 </details>
 
@@ -127,7 +127,7 @@ It should have generated the python wheel :
 🥳 **Congratulations**
 It should have generated the python wheel :
 - in folder `./dist/fixed/`
-- with name similar to `qi-3.1.7-cp313-cp313-macosx_11_0_arm64.whl`
+- with name similar to `qi-3.1.8-cp313-cp313-macosx_11_0_arm64.whl`
 - the wheel is compatible with MacOS 11+ (set `MACOSX_DEPLOYMENT_TARGET` to change it)
 </details>
 
@@ -150,7 +150,7 @@ It should have generated the python wheel :
 🥳 **Congratulations**
 It should have generated the python wheel :
 - in folder `./wheelhouse/`
-- with name similar to `qi-3.1.7-cp313-cp313-win_amd64.whl`
+- with name similar to `qi-3.1.8-cp313-cp313-win_amd64.whl`
 </details>
 
 ## License
